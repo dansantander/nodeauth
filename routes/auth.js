@@ -30,7 +30,13 @@ router.post('/register', async (req, res, next) => {
 
   try {
     const savedUser = await user.save();
-    res.send(savedUser);
+    // We don't wanna send back the whole user object
+    // which contains all the user data:
+    // res.send(savedUser);
+    // so we just send back the user id:
+    res.send({
+      user: user._id
+    })
   } catch(err) {
     res.status(400).send(err);
   }
