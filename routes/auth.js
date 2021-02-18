@@ -1,13 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const User = require('../model/User');
 
 
-router.post('/register', (req, res, next) => {
-  res.send('Registered')
-})
+router.post('/register', async (req, res, next) => {
+  const user = new User({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+  })
 
-router.post('/login', (req, res, next) => {
-  res.send('Logged In')
-})
+  try {
+    const savedUser = await user.save();
+    res.send(savedUser);
+  } catch(err) {
+    res.status(400).send(err);
+  }
+});
 
 module.exports = router;
