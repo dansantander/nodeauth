@@ -1,16 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../model/User');
-const Joi = require('@hapi/joi');
-
-// Validation
-const schema = Joi.object(
-  {
-    name: Joi.string().min(3).required(),
-    email: Joi.string().min(6).required().email(),
-    password: Joi.string().min(6).required(),
-  }
-)
+const { registerValidation } = require('../validation');
 
 router.post('/register', async (req, res, next) => {
 
@@ -18,7 +9,7 @@ router.post('/register', async (req, res, next) => {
   // const validation = schema.validate(req.body);
   // This returns an object, so we can destructure it
   // so that we only get the error messages:
-  const { error } = schema.validate(req.body);
+  const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   
   // User creation
