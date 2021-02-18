@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../model/User');
 const { registerValidation } = require('../validation');
+const bcrypt = require('bcryptjs')
 
 router.post('/register', async (req, res, next) => {
 
@@ -12,13 +13,19 @@ router.post('/register', async (req, res, next) => {
 
   // Check email uniqueness
   const emailExistence = await User.findOne({ email: req.body.email });
-  if (emailExistence) return res.status(400).send("Email already exists")
+  if (emailExistence) return res.status(400).send("Email already exists");
+
+  // Generate salt for the password
+  // Remember: 10 is the level of complexity of the hashing
+  const salt = await bcrypt.genSalt(10);
+  // Generate password hash
+  const hashedPassword = await bcrypt.hash(req.body.password, salt);
   
   // User creation
   const user = new User({
     name: req.body.name,
     email: req.body.email,
-    password: req.body.password,
+    password: hashedPassword,
   })
 
   try {
